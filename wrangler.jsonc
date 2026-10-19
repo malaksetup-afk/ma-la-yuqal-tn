@@ -1,16 +1,16 @@
 {
-  "name": "ma-la-yuqal-tn",
-  "main": "worker.js",
-  "compatibility_date": "2026-10-20",
-  "assets": {
-    "directory": ".",
-    "binding": "ASSETS",
-    "run_worker_first": ["/api/*"]
-  },
-  "kv_namespaces": [
-    {
-      "binding": "BOOK_DATA",
-      "id": "REPLACE_WITH_YOUR_KV_ID"
-    }
-  ]
+"name": "ma-la-yuqal-tn",
+"main": "worker.js",
+"compatibility_date": "2026-10-20",
+"assets": {
+"directory": ".",
+"binding": "ASSETS",
+"run_worker_first": ["/api/*"]
+},
+"kv_namespaces": [
+{
+"binding": "BOOK_DATA",
+"id": "fe9708c1e21d461c813782edc6dc8bb7"
+}
+]
 }
