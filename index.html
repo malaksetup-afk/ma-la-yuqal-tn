@@ -38,8 +38,7 @@ async function boot(){
   }
 }
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';try{await api('login',{method:'POST',body:JSON.stringify({password:$('password').value})});$('password').value='';await boot()}catch(err){$('loginError').textContent=err.message||'كلمة المرور غير صحيحة'}});
-$('logout').onclick=async()=>{await api('logout',{method:'POST',body:'{}'}).catch(()=>{});location.reloa
-                             ```javascript
+$('logout').onclick=async()=>{await api('logout',{method:'POST',body:'{}'}).catch(()=>{});location.reload()};
 function render(){
   const box = $('currentPage');
   box.innerHTML = '';
@@ -202,7 +201,7 @@ $('addMemory').onclick = async () => {
   }
 };
 ```
-('visitsBtn').onclick=async()=>{const p=$('visitsPanel');p.classList.toggle('hidden');if(!p.classList.contains('hidden')){try{const d=await api('visits');$('visits').innerHTML='';for(const v of d.visits){const li=document.createElement('li');li.textContent=new Date(v.at).toLocaleString('ar-LB');$('visits').append(li)}if(!d.visits.length)$('visits').innerHTML='<li>لا توجد زيارات مسجّلة بعد.</li>'}catch(e){say(e.message)}}};
+$('visitsBtn').onclick=async()=>{const p=$('visitsPanel');p.classList.toggle('hidden');if(!p.classList.contains('hidden')){try{const d=await api('visits');$('visits').innerHTML='';for(const v of d.visits){const li=document.createElement('li');li.textContent=new Date(v.at).toLocaleString('ar-LB');$('visits').append(li)}if(!d.visits.length)$('visits').innerHTML='<li>لا توجد زيارات مسجّلة بعد.</li>'}catch(e){say(e.message)}}};
 $('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({title:'ما لا يُقال | T.N',memories},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ma-la-yuqal-backup.json';a.click();URL.revokeObjectURL(a.href)};
 boot();
 </script></body></html>
