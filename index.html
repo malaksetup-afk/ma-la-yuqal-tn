@@ -15,7 +15,28 @@
 const $=id=>document.getElementById(id);let role='viewer',memories=[],page=0;
 async function api(path,opts={}){const r=await fetch('/api/'+path,{...opts,headers:{'Content-Type':'application/json',...(opts.headers||{})}});let data={};try{data=await r.json()}catch{}if(!r.ok)throw Error(data.error||'حدث خطأ');return data}
 function say(s){$('status').textContent=s||''}
-async function boot(){try{const d=await api('content');role=d.role;memories=d.memories||[];$('login').classList.add('hidden');$('book').classList.remove('hidden');if(role==='owner'){$('editor').classList.remove('hidden');$('visitsBtn').classList.remove('hidden')}render()}catch(e){$('login').classList.remove('hidden')}}
+async function boot(){
+  try {
+    const d = await api('content');
+    role = d.role;
+    memories = d.memories || [];
+
+    $('login').classList.add('hidden');
+    $('book').classList.remove('hidden');
+
+    if (role === 'owner') {
+      $('editor').classList.remove('hidden');
+      $('visitsBtn').classList.remove('hidden');
+    }
+
+    render();
+  } catch (e) {
+    $('login').classList.remove('hidden');
+    $('book').classList.add('hidden');
+    $('loginError').textContent =
+      'تعذّر تحميل الدفتر: ' + e.message;
+  }
+}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';try{await api('login',{method:'POST',body:JSON.stringify({password:$('password').value})});$('password').value='';await boot()}catch(err){$('loginError').textContent=err.message||'كلمة المرور غير صحيحة'}});
 $('logout').onclick=async()=>{await api('logout',{method:'POST',body:'{}'}).catch(()=>{});location.reloa
                              ```javascript
