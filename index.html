@@ -107,9 +107,9 @@ function render(){
     el.append(del);
   }
 
+  ```javascript
   box.append(el);
 }
-```
  
 $('prev').onclick=()=>{if(page>0){page--;render()}};$('next').onclick=()=>{if(page<memories.length-1){page++;render()}};
 async function save(){try{await api('content',{method:'POST',body:JSON.stringify({memories})});say('تم حفظ التغييرات.')}catch(e){say(e.message)}}
