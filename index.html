@@ -9,7 +9,7 @@
 <section id="login" class="panel center"><div class="butterflies" aria-hidden="true">🦋 ✧ 🦋</div><span class="badge">T.N · دفتر خاص</span><h1 class="title">ما لا يُقال</h1><div class="blue-star">⋆｡°✩ فراشات زرقاء وذكريات سرّية ✩°｡⋆</div><p class="sub">هناك أشياء لا تُقال بصوتٍ عالٍ…<br>بل تُترك بين صفحاتٍ لا يفتحها إلا من يعرف المفتاح.</p><form id="loginForm"><input id="password" type="password" placeholder="كلمة المرور" autocomplete="current-password" required><button type="submit">افتح الدفتر</button></form><p id="loginError" class="small"></p><p class="small">دفتر خاص. لا تشارك كلمة المرور إلا مع الشخص المقصود.</p></section>
 <section id="book" class="hidden"><header class="panel center"><div class="butterflies" aria-hidden="true">🦋 ✧ 🦋</div><span class="badge">دفتر الذكريات المقفَل · T.N</span><h1 class="title">ما لا يُقال</h1><p class="sub">كل صفحة تحمل شيئًا لم يُقَل بعد.</p><div class="row"><button class="secondary" id="logout">إغلاق الدفتر</button><button class="secondary hidden" id="visitsBtn">سجل الزيارات</button></div><p id="status" class="small"></p></header>
 <div class="panel"><div class="pages"><button class="secondary" id="prev">← السابقة</button><span id="pageLabel" class="badge">الصفحة 1</span><button class="secondary" id="next">التالية →</button></div><div id="currentPage"></div></div>
-<section id="editor" class="panel hidden"><h2 style="color:var(--gold)">إضافة صفحة جديدة 🦋</h2><label>عنوان الصفحة</label><input id="memTitle" type="text" placeholder="عنوان الذكرى"><label>النص</label><textarea id="memText" placeholder="اكتب ما لا يُقال..."></textarea><label>صورة (اختياري)</label><input id="memImage" type="file" accept="image/*"><button id="addMemory">إضافة إلى الدفتر</button><button class="secondary" id="exportData">تنزيل نسخة احتياطية</button></section>
+<section id="editor" class="panel hidden"><h2 style="color:var(--gold)">إضافة صفحة جديدة 🦋</h2><label>عنوان الصفحة</label><input id="memTitle" type="text" placeholder="عنوان الذكرى"><label>النص</label><textarea id="memText" placeholder="اكتب ما لا يُقال..."></textarea><label>صورة (اختياري)</label><input id="memImage" type="file" accept="image/*" multiple><button id="addMemory">إضافة إلى الدفتر</button><button class="secondary" id="exportData">تنزيل نسخة احتياطية</button></section>
 <section id="visitsPanel" class="panel hidden"><h2 style="color:var(--gold)">سجل الزيارات</h2><p class="small">يعرض وقت الدخول المسجّل، ولا يثبت وحده هوية الزائر أو أنه قرأ المحتوى.</p><ul id="visits"></ul></section></section><footer>ما لا يُقال · T.N</footer></main>
 <script>
 const $=id=>document.getElementById(id);let role='viewer',memories=[],page=0;
@@ -17,12 +17,171 @@ async function api(path,opts={}){const r=await fetch('/api/'+path,{...opts,heade
 function say(s){$('status').textContent=s||''}
 async function boot(){try{const d=await api('content');role=d.role;memories=d.memories||[];$('login').classList.add('hidden');$('book').classList.remove('hidden');if(role==='owner'){$('editor').classList.remove('hidden');$('visitsBtn').classList.remove('hidden')}render()}catch(e){$('login').classList.remove('hidden')}}
 $('loginForm').addEventListener('submit',async e=>{e.preventDefault();$('loginError').textContent='';try{await api('login',{method:'POST',body:JSON.stringify({password:$('password').value})});$('password').value='';await boot()}catch(err){$('loginError').textContent=err.message||'كلمة المرور غير صحيحة'}});
-$('logout').onclick=async()=>{await api('logout',{method:'POST',body:'{}'}).catch(()=>{});location.reload()};
-function render(){const box=$('currentPage');box.innerHTML='';$('pageLabel').textContent=`الصفحة ${memories.length? page+1:0} / ${memories.length}`;if(!memories.length){box.innerHTML='<div class="center sub" style="padding:35px">لم تُضَف أي صفحات بعد.<br>يمكن لصاحب الدفتر إضافة أول ذكرى من الأسفل.</div>';return}const m=memories[page];const el=document.createElement('article');el.className='memory';const h=document.createElement('h2');h.style.color='var(--gold)';h.textContent=m.title||'ذكرى';el.append(h);if(m.text){const p=document.createElement('p');p.textContent=m.text;el.append(p)}if(m.image){const im=document.createElement('img');im.src=m.image;im.alt=m.title||'صورة ذكرى';el.append(im)}if(role==='owner'){const del=document.createElement('button');del.className='secondary';del.textContent='حذف هذه الصفحة';del.onclick=async()=>{if(confirm('هل تريد حذف هذه الصفحة؟')){memories.splice(page,1);page=Math.max(0,page-1);await save();render()}};el.append(del)}box.append(el)}
+$('logout').onclick=async()=>{await api('logout',{method:'POST',body:'{}'}).catch(()=>{});location.reloa
+                             ```javascript
+function render(){
+  const box = $('currentPage');
+  box.innerHTML = '';
+  $('pageLabel').textContent = `الصفحة ${memories.length ? page+1 : 0} / ${memories.length}`;
+
+  if(!memories.length){
+    box.innerHTML = '<div class="center sub" style="padding:35px">لم تُضَف أي صفحات بعد.<br>يمكن لصاحب الدفتر إضافة أول ذكرى من الأسفل.</div>';
+    return;
+  }
+
+  const m = memories[page];
+  const el = document.createElement('article');
+  el.className = 'memory';
+
+  const h = document.createElement('h2');
+  h.style.color = 'var(--blue)';
+  h.textContent = m.title || 'ذكرى';
+  el.append(h);
+
+  if(m.text){
+    const p = document.createElement('p');
+    p.textContent = m.text;
+    el.append(p);
+  }
+
+  // دعم الصور القديمة والجديدة
+  const images = Array.isArray(m.images)
+    ? m.images
+    : (m.image ? [m.image] : []);
+
+  images.forEach((src, index) => {
+    const im = document.createElement('img');
+    im.src = src;
+    im.alt = (m.title || 'صورة ذكرى') + ' ' + (index + 1);
+    im.style.cursor = 'zoom-in';
+    im.title = 'اضغط لعرض الصورة بالحجم الكامل';
+
+    im.onclick = () => {
+      const win = window.open();
+      if(win){
+        const img = win.document.createElement('img');
+        img.src = src;
+        img.style.cssText = 'max-width:100%;height:auto;display:block;margin:auto';
+        win.document.body.style.cssText = 'margin:0;background:#080c13;text-align:center';
+        win.document.body.appendChild(img);
+      }
+    };
+
+    el.append(im);
+  });
+
+  if(role === 'owner'){
+    const del = document.createElement('button');
+    del.className = 'secondary';
+    del.textContent = 'حذف هذه الصفحة';
+
+    del.onclick = async () => {
+      if(confirm('هل تريد حذف هذه الصفحة؟')){
+        memories.splice(page, 1);
+        page = Math.max(0, page - 1);
+        await save();
+        render();
+      }
+    };
+
+    el.append(del);
+  }
+
+  box.append(el);
+}
+```
+ 
 $('prev').onclick=()=>{if(page>0){page--;render()}};$('next').onclick=()=>{if(page<memories.length-1){page++;render()}};
 async function save(){try{await api('content',{method:'POST',body:JSON.stringify({memories})});say('تم حفظ التغييرات.')}catch(e){say(e.message)}}
-$('addMemory').onclick=async()=>{if(role!=='owner')return;const f=$('memImage').files[0];let image='';if(f){if(f.size>1500000){say('الصورة كبيرة؛ اختر صورة أصغر من 1.5 ميغابايت.');return}image=await new Promise((res,rej)=>{const r=new FileReader();r.onload=()=>res(r.result);r.onerror=rej;r.readAsDataURL(f)})}memories.push({title:$('memTitle').value.trim()||'ذكرى بلا عنوان',text:$('memText').value,image,createdAt:new Date().toISOString()});page=memories.length-1;await save();render();$('memTitle').value='';$('memText').value='';$('memImage').value=''};
-$('visitsBtn').onclick=async()=>{const p=$('visitsPanel');p.classList.toggle('hidden');if(!p.classList.contains('hidden')){try{const d=await api('visits');$('visits').innerHTML='';for(const v of d.visits){const li=document.createElement('li');li.textContent=new Date(v.at).toLocaleString('ar-LB');$('visits').append(li)}if(!d.visits.length)$('visits').innerHTML='<li>لا توجد زيارات مسجّلة بعد.</li>'}catch(e){say(e.message)}}};
+```javascript
+async function compressImage(file) {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    const reader = new FileReader();
+
+    reader.onload = () => {
+      img.onload = () => {
+        const canvas = document.createElement('canvas');
+        const maxSize = 1200;
+        const scale = Math.min(1, maxSize / Math.max(img.width, img.height));
+
+        canvas.width = Math.round(img.width * scale);
+        canvas.height = Math.round(img.height * scale);
+
+        const ctx = canvas.getContext('2d');
+        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+
+        resolve(canvas.toDataURL('image/jpeg', 0.7));
+      };
+
+      img.onerror = () => reject(new Error('تعذّر فتح إحدى الصور.'));
+      img.src = reader.result;
+    };
+
+    reader.onerror = () => reject(new Error('تعذّرت قراءة إحدى الصور.'));
+    reader.readAsDataURL(file);
+  });
+}
+
+$('addMemory').onclick = async () => {
+  if (role !== 'owner') return;
+
+  const files = Array.from($('memImage').files);
+
+  if (files.length > 4) {
+    say('يمكنك إضافة 4 صور كحد أقصى لكل ذكرى.');
+    return;
+  }
+
+  if (files.some(f => !f.type.startsWith('image/'))) {
+    say('اختر ملفات صور فقط.');
+    return;
+  }
+
+  const button = $('addMemory');
+  button.disabled = true;
+
+  try {
+    say('جارٍ تجهيز الصور...');
+
+    const images = [];
+    for (const file of files) {
+      images.push(await compressImage(file));
+    }
+
+    const memory = {
+      title: $('memTitle').value.trim() || 'ذكرى بلا عنوان',
+      text: $('memText').value,
+      images,
+      createdAt: new Date().toISOString()
+    };
+
+    memories.push(memory);
+    const oldPage = page;
+    page = memories.length - 1;
+
+    await save();
+
+    if ($('status').textContent !== 'تم حفظ التغييرات.') {
+      memories.pop();
+      page = oldPage;
+      return;
+    }
+
+    render();
+    $('memTitle').value = '';
+    $('memText').value = '';
+    $('memImage').value = '';
+    say('تمت إضافة الذكرى وحفظها بنجاح 🦋');
+
+  } catch (e) {
+    say(e.message || 'حدث خطأ أثناء تجهيز الصور.');
+  } finally {
+    button.disabled = false;
+  }
+};
+```
+('visitsBtn').onclick=async()=>{const p=$('visitsPanel');p.classList.toggle('hidden');if(!p.classList.contains('hidden')){try{const d=await api('visits');$('visits').innerHTML='';for(const v of d.visits){const li=document.createElement('li');li.textContent=new Date(v.at).toLocaleString('ar-LB');$('visits').append(li)}if(!d.visits.length)$('visits').innerHTML='<li>لا توجد زيارات مسجّلة بعد.</li>'}catch(e){say(e.message)}}};
 $('exportData').onclick=()=>{const blob=new Blob([JSON.stringify({title:'ما لا يُقال | T.N',memories},null,2)],{type:'application/json'});const a=document.createElement('a');a.href=URL.createObjectURL(blob);a.download='ma-la-yuqal-backup.json';a.click();URL.revokeObjectURL(a.href)};
 boot();
 </script></body></html>
