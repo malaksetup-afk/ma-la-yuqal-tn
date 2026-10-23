@@ -69,23 +69,44 @@ function render(){
     ? m.images
     : (m.image ? [m.image] : []);
 
-  images.forEach((src, index) => {
-    const im = document.createElement('img');
-    im.src = src;
-    im.alt = (m.title || 'صورة ذكرى') + ' ' + (index + 1);
-    im.style.cursor = 'zoom-in';
-    im.title = 'اضغط لعرض الصورة بالحجم الكامل';
+  const gallery = document.createElement('div');
+gallery.style.cssText = `
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  gap: 12px;
+  margin-top: 15px;
+`;
 
-    im.onclick = () => {
-      const win = window.open();
-      if(win){
-        const img = win.document.createElement('img');
-        img.src = src;
-        img.style.cssText = 'max-width:100%;height:auto;display:block;margin:auto';
-        win.document.body.style.cssText = 'margin:0;background:#080c13;text-align:center';
-        win.document.body.appendChild(img);
-      }
-    };
+images.forEach((src, index) => {
+  const im = document.createElement('img');
+  im.src = src;
+  im.alt = (m.title || 'صورة ذكرى') + ' ' + (index + 1);
+  im.title = 'اضغط لعرض الصورة بالحجم الكامل';
+
+  im.style.cssText = `
+    width: 100%;
+    height: 180px;
+    object-fit: cover;
+    margin: 0;
+    border-radius: 12px;
+    cursor: zoom-in;
+  `;
+
+  im.onclick = () => {
+    const win = window.open();
+    if (win) {
+      const img = win.document.createElement('img');
+      img.src = src;
+      img.style.cssText = 'max-width:100%;height:auto;display:block;margin:auto';
+      win.document.body.style.cssText = 'margin:0;background:#080c13;text-align:center';
+      win.document.body.appendChild(img);
+    }
+  };
+
+  gallery.append(im);
+});
+
+el.append(gallery);
 
     el.append(im);
   });
